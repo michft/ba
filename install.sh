@@ -1,11 +1,10 @@
 #!/bin/bash
 
-if test ${1+defined}; then echo "make sure you have a username entered."; fi
-
-echo here
-
-exit 1
-
+if test ${1+defined}; then echo "User : $1."; 
+else
+  echo "No user defined"
+  exit 0
+fi
 
 cp root.ba /root/.bash_aliases
 cp user.ba /home/$1/.bash_aliases
