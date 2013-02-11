@@ -10,4 +10,5 @@ dkred="\e[0;31m"
 blue="\e[1;34m"
 
 
-PS1="\[$red\]\H\[$white\]${SSH_TTY} \[$green\]+${SHLVL} \[$blue\]\w\[$ltgreen\]"'$(__git_ps1 " (%s)")'"\n\[$skgreen\]($SHLVL:\!)\[$boldwhite\]\$ "
+PS1="\[$red\]\H\[$white\]${SSH_TTY} \[$green\]+${SHLVL} \[$blue\]\w\[$ltgreen\]"\
+'$(__git_ps1 " (%s)")'"\n\[$skgreen\]($SHLVL:\!)\[$boldwhite\]\$ "
