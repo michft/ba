@@ -15,10 +15,10 @@ user yellow with username in prompt.
 
 
 
-assume both
+assume neither (so install.sh)
 
--  .bash_aliases referenced by .bashrc
--  __git_ps resolves to a bash function (may need installation)
+-  .bash_aliases referenced by /etc/bash.bashrc.
+-  __git_ps resolves to a bash function.
 
 Michael Tomkins
 
