@@ -1,14 +1,14 @@
 # assumes a colour capable prompt and colour on. Included from .basrrc.
 
 red="\e[38;5;196m"
+yellow="\e[38;5;214m"
 white="\e[0;37m"
+gray="\e[1;30m"
+green="\e[1;32m"
 boldwhite="\e[1;37m"
-green="\e[0;32m"
-ltgreen="\e[38;5;47m"
-skgreen="\e[38;5;112m"
-dkred="\e[0;31m"
 blue="\e[1;34m"
+dkyellow="\e[0;33m"
 
+PS1="\[$red\]\u@\h \[$dkyellow\]\d \t\[$white\]${SSH_TTY} \[$blue\]+${SHLVL} \[$boldwhite\]\w\[$yellow\]"\
+'$(__git_ps1 " (%s)")'"\[$red\]($SHLVL:\!)\[$boldwhite\]\$ "
 
-PS1="\[$red\]\H\[$white\]${SSH_TTY} \[$green\]+${SHLVL} \[$blue\]\w\[$ltgreen\]"\
-'$(__git_ps1 " (%s)")'"\n\[$skgreen\]($SHLVL:\!)\[$boldwhite\]\$ "
