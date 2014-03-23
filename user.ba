@@ -1,13 +1,77 @@
 # assumes a colour capable prompt and colour on. Included from .basrrc.
 
+export TERM=xterm-256color
+
 red="\e[38;5;196m"
-yellow="\e[38;5;214m"
+dkred="\e[38;5;088m"
+graze="\e[38;5;146m"
 white="\e[0;37m"
 gray="\e[1;30m"
-green="\e[1;32m"
+green="\e[38;5;046m"
 boldwhite="\e[1;37m"
 blue="\e[1;34m"
+yellow="\e[38;5;226m"
 dkyellow="\e[0;33m"
 
-PS1="\[$yellow\]\u@\h \[$green\]\d \t\[$white\]${SSH_TTY} \[$blue\]+${SHLVL} \[$boldwhite\]\w\[$red\]"\
-'$(__git_ps1 " (%s)")'"\[$dkyellow\]($SHLVL:\!)\[$boldwhite\]\$ "
+PS1="\[$graze\]\u@\h \[$green\]\d \t\[$blue\]${SSH_TTY} \[$dkred\]+${SHLVL} \[$yellow\]\w\[$red\]"\
+' $(__git_ps1 " (%s)")'"\[$dkyellow\]($SHLVL:\!)\[$boldwhite\]\$ "
+
+PROMPT_COMMAND='echo -ne "\033]0;${HOSTNAME}\007"'
+
+__gitb ()
+{
+    local b="$(git symbolic-ref HEAD 2>/dev/null)";
+    if [ -n "$b" ]; then
+        printf " %s " "${b##refs/heads/}";
+    fi
+}
+
+__git_ps1 ()
+{
+    [ -n "$(__gitb)" ] && printf " (%s)" "$(__gitb)" | sed "s/ //g";
+}
+
+if [ -f ~/.git-completion.bash ]; then
+  . ~/.git-completion.bash
+fi
+
+genpasswd() {
+        local l=$1
+        [ "$l" == "" ] && l=20
+        tr -dc [:graph:] < /dev/urandom | head -c ${l} | xargs -0
+}
+
+function ds() { date -d "@$1" ; }
+
+export HISTTIMEFORMAT='%F %T '
+export HISTCONTROL=ignoreboth
+export HISTSIZE=10000
+
+
+## Git
+## http://jasonm23.github.io/oh-my-git-aliases.html
+## https://git.wiki.kernel.org/index.php/Aliases#Aliases_with_arguments
+alias ga="git add -p && git commit -m "
+alias gb="git branch"
+alias gc="git checkout"
+alias gcm="git checkout master"
+alias gct="git checkout test" ## git symbolic-ref refs/heads/test refs/heads/lt
+alias gd="git diff "
+alias gf="git reset HEAD --hard" ## git f$@k
+alias gg="git grep --break --heading --line-number "
+alias gi="git init"
+alias gl="git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias gm="git merge"
+alias gmt="git mergetool"
+## go can be golang
+alias gp="git pull"
+alias gr="git rebase"
+## gs usually ghost script
+alias gsh="git stash" ## git hide my work
+alias gsp="git stash pop" ##
+alias gt="git status"
+## !git remote update -p; git merge --ff-only @{u}
+alias gu="git pull origin $(__gitb) && git push origin $(__gitb)" ## git catch up
+alias gx="git shortlog -sn"
+alias gz="git push" ## I'm going to sleep now, git zzzz
+
