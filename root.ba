@@ -12,3 +12,10 @@ dkyellow="\e[0;33m"
 PS1="\[$red\]\u@\h \[$dkyellow\]\d \t\[$white\]${SSH_TTY} \[$blue\]+${SHLVL} \[$boldwhite\]\w\[$yellow\]"\
 '$(__git_ps1 " (%s)")'"\[$red\]($SHLVL:\!)\[$boldwhite\]\$ "
 
+__git_ps1 ()
+{
+    local b="$(git symbolic-ref HEAD 2>/dev/null)";
+    if [ -n "$b" ]; then
+        printf " (%s)" "${b##refs/heads/}";
+    fi
+}
