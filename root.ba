@@ -9,8 +9,8 @@ boldwhite="\e[1;37m"
 blue="\e[1;34m"
 dkyellow="\e[0;33m"
 
-PS1="\[$red\]\u@\h \[$dkyellow\]\d \t\[$white\]${SSH_TTY} \[$blue\]+${SHLVL} \[$boldwhite\]\w\[$yellow\]"\
-'$(__git_ps1 " (%s)")'"\[$red\]($SHLVL:\!)\[$boldwhite\]\$ "
+PS1="\[$red\]\u@\h \[$dkyellow\]\d \t\[$white\]${SSH_TTY} \[$blue\]+${SHLVL} \[$boldwhite\]\w\[$red\]"\
+'$(__git_ps1 " (%s)")'"\[$yellow\]($SHLVL:\!)\[$boldwhite\]\$ "
 
 __git_ps1 ()
 {
