@@ -1,4 +1,9 @@
+## cat /dev/urandom|tr -dc "a-zA-Z0-9-_\$\?"|fold -w 50 |head -20
+
 # assumes a colour capable prompt and colour on. Included from .basrrc.
+
+alias ls='ls -aF --color=always'
+alias mkdir='mkdir -pv'
 
 export TERM=xterm-256color
 
@@ -41,14 +46,20 @@ genpasswd() {
         tr -dc [:graph:] < /dev/urandom | head -c ${l} | xargs -0
 }
 
-function ds() { date -d "@$1" ; }
+alias dis2pr="xrandr --output LVDS1 --auto --output VGA1 --rotate left --auto --right-of LVDS1"
 
+export GOPATH=/home/mich/dev/go
+export PATH=$PATH:$GOPATH/bin
+export AWS_CONFIG_FILE=~/.aws
 export HISTTIMEFORMAT='%F %T '
 export HISTCONTROL=ignoreboth
 export HISTSIZE=10000
 
+## date +%s  #to get current timestamp
+function ts() { date -d "@$1" ; }
 
 ## Git
+
 ## http://jasonm23.github.io/oh-my-git-aliases.html
 ## https://git.wiki.kernel.org/index.php/Aliases#Aliases_with_arguments
 alias ga="git add -p && git commit -m "
@@ -74,4 +85,3 @@ alias gt="git status"
 alias gu="git pull origin $(__gitb) && git push origin $(__gitb)" ## git catch up
 alias gx="git shortlog -sn"
 alias gz="git push" ## I'm going to sleep now, git zzzz
-
