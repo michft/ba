@@ -9,13 +9,14 @@ fi
 cat root.ba >> /root/.bash_aliases
 cat user.ba >> /home/$1/.bash_aliases
 cat vimrc | tee -a /root/.vimrc >> /home/$1/.vimrc
+cat .inputrc | tee /root/.inputrc >> /home/$1/.inputrc
 
 chown $1 /home/$1/.bash_aliases
 
 if [ "0" -eq "$(grep -c aliases /etc/bash.bashrc)" ] ; then
   echo "" >> /etc/bash.bashrc
   echo "if [ -f ~/.bash_aliases ]; then" >> /etc/bash.bashrc
-  echo "    . ~/.bash_aliases" >> /etc/bash.bashrc
+  echo "  . ~/.bash_aliases" >> /etc/bash.bashrc
   echo "fi" >> /etc/bash.bashrc
 fi
 
