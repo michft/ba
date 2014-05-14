@@ -1,3 +1,7 @@
+## The god of commands.
+
+set -o vi
+
 # assumes a colour capable prompt and colour on. Included from .basrrc.
 
 red="\e[38;5;196m"
