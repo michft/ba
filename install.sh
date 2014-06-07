@@ -11,6 +11,13 @@ cat user.ba >> /home/$1/.bash_aliases
 cat vimrc | tee -a /root/.vimrc >> /home/$1/.vimrc
 cat .inputrc | tee /root/.inputrc >> /home/$1/.inputrc
 
+if test git 2>/dev/null; then
+    git config --global user.name "Michael Tomkins"
+    echo "set User=Michael Tomkins run \# git config --global user.email EMAIL"
+else
+    echo "GIT not INSTALLED!! install git"
+fi
+
 chown $1 /home/$1/.bash_aliases
 
 if [ "0" -eq "$(grep -c aliases /etc/bash.bashrc)" ] ; then
