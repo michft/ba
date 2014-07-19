@@ -1,1 +1,8 @@
-mint-artwork-debian network-manager-gnome pwgen dnsmasq htop iftop iotop firmware-iwlwifi systemd systemd-sysv systemd-shim  systemd-cron vlc fonts-freefont-ttf terminator git lib-virt xfce4-audio-panel netselect-apt
+dnsmasq,fonts-freefont-ttf,git,htop,iftop,iotop,less,locales-all,netselect-apt,network-manager-gnome,openssh-server,pwgen,sudo,systemd,systemd-cron,systemd-shim,systemd-sysv,vim
+
+gpg --keyserver pgp.mit.edu --recv-keys 3EE67F3D0FF405B2
+gpg --armor --export 3EE67F3D0FF405B2 | apt-key add -
+
+aptitude install  linux-image-amd64
+
+firmware-iwlwifi lib-virt mint-artwork-debian xfce4-audio-panel vlc terminator firefox thunderbird pidgin
