@@ -1,1 +1,3 @@
-mint-artwork-debian network-manager-gnome pwgen dnsmasq htop iftop iotop firmware-iwlwifi systemd systemd-sysv systemd-shim  systemd-cron vlc fonts-freefont-ttf terminator git lib-virt xfce4-audio-panel netselect-apt
+dnsmasq,fonts-freefont-ttf,git,htop,iftop,iotop,less,lib-virt,locales-all,netselect-apt,network-manager-gnome,openssh-server,pwgen,sudo,systemd,systemd-cron,systemd-shim,systemd-sysv,vim
+
+firmware-iwlwifi mint-artwork-debian xfce4-audio-panel vlc terminator firefox thunderbird pidgin
