@@ -1,0 +1,1 @@
+mint-artwork-debian network-manager-gnome pwgen dnsmasq htop iftop iotop firmware-iwlwifi systemd systemd-sysv systemd-shim  systemd-cron vlc fonts-freefont-ttf terminator git lib-virt xfce4-audio-panel netselect-apt
