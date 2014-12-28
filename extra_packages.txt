@@ -1,4 +1,4 @@
-dnsmasq,fonts-freefont-ttf,git,htop,iftop,iotop,less,locales-all,netselect-apt,network-manager-gnome,openssh-server,pwgen,sudo,systemd,systemd-cron,systemd-shim,systemd-sysv,vim
+dnsmasq,fonts-freefont-ttf,git,atop,htop,iftop,iotop,less,locales-all,netselect-apt,network-manager-gnome,openssh-server,pwgen,sudo,vim
 
 gpg --keyserver pgp.mit.edu --recv-keys 3EE67F3D0FF405B2
 gpg --armor --export 3EE67F3D0FF405B2 | apt-key add -
