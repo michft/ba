@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+[ "$*" == "" ] && (echo -e '\nUsage : rot13 [string]' ; exit 1)
+
+echo $* | tr '[A-Za-z]' '[N-ZA-Mn-za-m]'
+
+exit 0
