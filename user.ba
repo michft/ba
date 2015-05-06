@@ -90,6 +90,12 @@ chmod 400 "${SSH_AGENT_CACHE}"
 eval `cat "${SSH_AGENT_CACHE}"`
 fi
 
+##Clear agent between logins
+if [ $SHLVL == 1 ]
+then
+  ssh-add -D
+fi
+
 ## Gen arbitrary length password.
 
 genpasswd() {
