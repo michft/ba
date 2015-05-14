@@ -101,7 +101,7 @@ fi
 genpasswd() {
         local l=$1
         [ "$l" == "" ] && l=20
-        tr -dc {[:graph:]} < /dev/urandom | head -c ${l} | xargs -0
+        tr -dc {[:graph:]} < /dev/urandom | tr -d "oO0{}$:;!\\\"'*|?Ql1Ii"  | head -c ${l} | xargs -0
 }
 
 alias dis2pr="xrandr --output LVDS1 --auto --output VGA1 --rotate left --auto --right-of LVDS1"
