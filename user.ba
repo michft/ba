@@ -109,6 +109,9 @@ alias dis2pr="xrandr --output LVDS1 --auto --output VGA1 --rotate left --auto --
 ## date +%s  #to get timestamp
 function ds() { date -d "@$1" ; }
 
+## AWS-CLI bash completion
+complete -C aws_completer aws
+
 ## Google sdk
 # The next line updates PATH for the Google Cloud SDK.
 #source /home/mich/src/google-cloud-sdk/path.bash.inc
