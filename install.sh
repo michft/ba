@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
 
+set -uex pipefail
+
 if test ${1+defined}; then echo "User : $1."; 
 else
   echo "No user defined"
-  exit 0
+  exit 1
 fi
 
 cat root.ba >> /root/.bash_aliases
 cat user.ba >> /home/$1/.bash_aliases
+cat term.config >> /home/$1/.config/terminator/config
+cat term.desktop >> /home/$1/.local/share/applications/terminator.desktop
 cat vimrc | tee -a /root/.vimrc >> /home/$1/.vimrc
 cat .inputrc | tee /root/.inputrc >> /home/$1/.inputrc
 
@@ -27,3 +31,4 @@ if [ "0" -eq "$(grep -c aliases /etc/bash.bashrc)" ] ; then
   echo "fi" >> /etc/bash.bashrc
 fi
 
+exit 0

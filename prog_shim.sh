@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 
-   exit 1
-fi	
+set -uex pipefail
 
-/usr/bin/apt install git vim ansible terminator
+sudo /usr/bin/apt install -y python3 python3-pip
+pip3 install ansible
 
 exit 0
