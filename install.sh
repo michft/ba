@@ -18,7 +18,7 @@ else
     echo "GIT not INSTALLED!! install git"
 fi
 
-chown $1 /home/$1/.bash_aliases
+chown $1:$1 /home/$1/.bash_aliases
 
 if [ "0" -eq "$(grep -c aliases /etc/bash.bashrc)" ] ; then
   echo "" >> /etc/bash.bashrc
