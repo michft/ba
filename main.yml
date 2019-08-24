@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+
+  - name: install visual studio code
+    apt:
+      name: code
+      cache_valid_time: 86400
+
+  - name: add lazygit apt-key
+    apt_key:
+      keyserver: keyserver.ubuntu.com
+      id: 41468d9a516ab58268042c6768ccf87596e97291
+
+  - name: add lazygit repo
+    apt_repository:
+      repo: deb http://ppa.launchpad.net/lazygit-team/release/ubuntu disco main
+      state: present
+
+  - name: install lazygit
+    apt:
+      name: lazygit
+      cache_valid_time: 86400
+
+  - name: Remove dependencies that are no longer required
+    apt:
+      autoremove: yes
