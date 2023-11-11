@@ -126,8 +126,8 @@ complete -C aws_completer aws
 alias ga="git add -p && git commit -m "
 alias gb="git branch"
 alias gc="git checkout"
-alias gcm="git checkout master"
-alias gct="git checkout test" ## git symbolic-ref refs/heads/test refs/heads/lt
+alias gcd="git checkout dev || git checkout test"
+alias gcm="git checkout main || git checkout master"
 alias gd="git diff "
 alias gf="git reset HEAD --hard" ## git f$@k
 alias gg="git grep --break --heading --line-number "
