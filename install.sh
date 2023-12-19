@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -uex pipefail
 
 if test ${1+defined}; then echo "User : $1."; 
 else
