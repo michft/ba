@@ -60,6 +60,17 @@ class SetupTests(unittest.TestCase):
             self.email_prompt.assert_not_called()
             self.assertEqual(config.read_text(), original)
 
+    def test_effective_email_ignores_shadowed_values(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "config.toml"
+            for effective in ["", TEST_EMAIL]:
+                with self.subTest(effective=effective):
+                    config.write_text(
+                        'user.email = "shadowed"\n[[--scope]]\n[--scope.user]\n'
+                        f'email = "{effective}"\n'
+                    )
+                    self.assertEqual(setup.configured_email(config), effective)
+
     def test_blank_email_retries_and_preserves_other_toml(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
@@ -216,6 +227,42 @@ class ShellTests(unittest.TestCase):
         self.assertEqual(result.returncode, 9)
         self.assertNotIn("push", self.log.read_text())
 
+    def test_branch_shortcuts_select_before_running_one_operation(self):
+        self.stub("git", '''case "$1" in
+  show-ref) branch=${4#refs/heads/} ;;
+  checkout|switch|merge) branch=$2 ;;
+  *) exit 99 ;;
+esac
+case " $BA_TEST_BRANCHES " in
+  *" $branch "*) ;;
+  *) exit 1 ;;
+esac
+[ "$1" = show-ref ] && exit 0
+exit "${BA_GIT_OPERATION_EXIT:-0}"''')
+        shortcuts = {
+            "gcd": ("checkout", ["dev", "develop", "test"]),
+            "gcm": ("checkout", ["prod", "main", "master"]),
+            "gsd": ("switch", ["dev", "develop", "test"]),
+            "gsm": ("switch", ["prod", "main", "master"]),
+            "gm": ("merge", ["prod", "master", "main"]),
+        }
+        for shortcut, (operation, branches) in shortcuts.items():
+            cases = [(branches, 7), *[(branches[index:], 0) for index in range(3)], ([], 0)]
+            for available, exit_code in cases:
+                with self.subTest(shortcut=shortcut, available=available, exit_code=exit_code):
+                    self.log.unlink(missing_ok=True)
+                    self.env["BA_TEST_BRANCHES"] = " ".join(available)
+                    self.env["BA_GIT_OPERATION_EXIT"] = str(exit_code)
+                    result = self.shell(
+                        f"source {shlex.quote(str(ROOT / 'zsh/aliases.zsh'))}\n"
+                        f"eval '{shortcut} --quiet'"
+                    )
+                    calls = [part.splitlines() for part in self.log.read_text().split(str(self.directory / "git") + "\n") if part]
+                    operations = [call for call in calls if call[0] in {"checkout", "switch", "merge"}]
+                    expected = [[operation, available[0], "--quiet"]] if available else []
+                    self.assertEqual(operations, expected)
+                    self.assertEqual(result.returncode, exit_code if available else 1, result.stderr)
+
     def test_interactive_startup_without_optional_tools(self):
         # Environment discovery is tested separately; isolate optional integrations.
         code = f'''typeset -g _BA_ENV_LOADED=1
@@ -242,6 +289,27 @@ source {shlex.quote(str(ROOT / 'zsh/environment.zsh'))}
         result = self.shell(code)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.log.read_text().count("--prefix"), 1)
+
+    def test_aws_ca_bundle_default_preserves_existing_values(self):
+        prefix = self.directory / "brew-prefix"
+        certificate = prefix / "etc/ca-certificates/cert.pem"
+        certificate.parent.mkdir(parents=True)
+        self.stub("brew", f"printf '%s\\n' {shlex.quote(str(prefix))}")
+        for existing, certificate_exists in [(None, True), ("/custom/ca.pem", True), ("", True), (None, False)]:
+            with self.subTest(existing=existing, certificate_exists=certificate_exists):
+                certificate.unlink(missing_ok=True)
+                if certificate_exists:
+                    certificate.write_text("test certificate\n")
+                self.env.pop("AWS_CA_BUNDLE", None)
+                if existing is not None:
+                    self.env["AWS_CA_BUNDLE"] = existing
+                result = self.shell(
+                    f"source {shlex.quote(str(ROOT / 'zsh/environment.zsh'))}\n"
+                    "/usr/bin/printenv AWS_CA_BUNDLE"
+                )
+                expected = existing if existing is not None else str(certificate) if certificate_exists else None
+                self.assertEqual(result.returncode, 0 if expected is not None else 1, result.stderr)
+                self.assertEqual(result.stdout, expected + "\n" if expected is not None else "")
 
 
 if __name__ == "__main__":

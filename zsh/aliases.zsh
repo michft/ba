@@ -1,21 +1,34 @@
 # Existing shorthand, with prod as the preferred default branch.
+_ba_git_branch_operation() {
+  local operation=$1 branches=$2 branch
+  shift 2
+  for branch in ${=branches}; do
+    if command git show-ref --verify --quiet "refs/heads/$branch"; then
+      command git "$operation" "$branch" "$@"
+      return
+    fi
+  done
+  print -u2 -- "No local branch found: $branches"
+  return 1
+}
+
 alias ga='git add -p && git commit -m '
 alias gb='git branch'
 alias gc='git checkout'
-alias gcd='git checkout dev || git checkout develop || git checkout test'
-alias gcm='git checkout prod || git checkout main || git checkout master'
+alias gcd="_ba_git_branch_operation checkout 'dev develop test'"
+alias gcm="_ba_git_branch_operation checkout 'prod main master'"
 alias gd='git diff'
 alias gf='git reset HEAD --hard'
 alias gffs='git reset HEAD --soft'
 alias gg='git grep --break --heading --line-number'
 alias gi='git init'
 alias gl="git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-alias gm='git merge prod || git merge master || git merge main'
+alias gm="_ba_git_branch_operation merge 'prod master main'"
 alias gmt='git mergetool'
 alias gp='git pull'
 alias gr='git rebase -i'
-alias gsd='git switch dev || git switch develop || git switch test'
-alias gsm='git switch prod || git switch main || git switch master'
+alias gsd="_ba_git_branch_operation switch 'dev develop test'"
+alias gsm="_ba_git_branch_operation switch 'prod main master'"
 alias gsh='git stash'
 alias gsp='git stash pop'
 alias gt='git status'

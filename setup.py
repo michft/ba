@@ -50,7 +50,7 @@ def configured_email(path: Path) -> str:
         return ""
     result = subprocess.run(
         ["jj", "--ignore-working-copy", "config", "list", "--user",
-         "--include-overridden", "user.email", "--template", "value.as_string()"],
+         "user.email", "--template", "value.as_string()"],
         env=dict(os.environ, JJ_CONFIG=str(path)), cwd=path.parent,
         check=True, capture_output=True, text=True,
     )

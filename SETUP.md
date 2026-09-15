@@ -63,6 +63,8 @@ files manually to your chosen Zsh startup files instead.
 | `macos/cmux-preferences.json` | Shared native cmux preference values |
 
 Homebrew works under Apple Silicon or Intel prefixes. User paths use `$HOME`.
+Its CA bundle is exported only when the certificate exists and `AWS_CA_BUNDLE`
+is unset; an existing value, including an empty value, is preserved.
 Optional commands/completions are enabled only when present. External Android
 storage, Java selection and the legacy AWS config override are examples in
 `zsh/env.zsh.example`; enable only the values appropriate to each machine.
@@ -77,6 +79,8 @@ installed. `genpasswd` accepts a positive length; `ds` converts Unix timestamps.
 Differences from the historical snapshot:
 
 - Git default-branch shortcuts prefer `prod`, retaining legacy fallback branches.
+  Checkout, switch and merge shortcuts select the first existing local branch
+  before running once; operation failures do not trigger another fallback.
 - `gtp` opens a PR against `prod`; branch/title are resolved when invoked.
 - `gu` resolves its branch at invocation and stops if pull fails.
 - `gr` uses valid `git rebase -i` argument order.
@@ -121,7 +125,7 @@ A `cmux-domain-absent` marker means no prior preference domain existed.
 ## Share changes between machines
 
 The default branch is `prod`. GitHub's default was changed by the owner during
-this setup. Local JJ `trunk()` is set to `prod`.
+this setup. Local JJ `trunk()` is set to `prod@origin`.
 
 New clone (choose a destination that does not already contain a checkout):
 

@@ -19,7 +19,7 @@ if [[ -n ${HOMEBREW_PREFIX-} ]]; then
   for _ba_dir in "$HOMEBREW_PREFIX/opt/make/libexec/gnubin" "$HOMEBREW_PREFIX/opt/openssl@3/bin"; do
     [[ -d $_ba_dir ]] && path=("$_ba_dir" $path)
   done
-  [[ -f $HOMEBREW_PREFIX/etc/ca-certificates/cert.pem ]] &&
+  [[ -z ${AWS_CA_BUNDLE+x} && -f $HOMEBREW_PREFIX/etc/ca-certificates/cert.pem ]] &&
     export AWS_CA_BUNDLE=$HOMEBREW_PREFIX/etc/ca-certificates/cert.pem
 fi
 export BUN_INSTALL=${BUN_INSTALL:-$HOME/.bun}

@@ -52,11 +52,11 @@ The repository is colocated: both `.git` and `.jj` are in `/Users/mt/src/ba`.
 - `prod`: matches the last fetched `prod@origin`; it is not the feature branch.
 - The working copy is an empty change on top of `zsh-cmux-setup`.
 
-Repository-local JJ configuration sets `trunk()` to `prod`. JJ configuration is
-not tracked by Git. To reproduce that local setting in another clone:
+Repository-local JJ configuration sets `trunk()` to `prod@origin`. JJ configuration
+is not tracked by Git. To reproduce that local setting in another clone:
 
 ```sh
-jj config set --repo 'revset-aliases."trunk()"' prod
+jj config set --repo 'revset-aliases."trunk()"' 'prod@origin'
 ```
 
 Review before publishing:
