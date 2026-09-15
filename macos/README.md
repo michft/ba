@@ -10,7 +10,7 @@ machine backup. The existing Linux files and `install.sh` remain separate.
 - `.zshrc`: prompt, history, completion, environment, Git/JJ aliases and utilities.
 - `.zprofile`, `.zshenv`, `.bashrc`, `.profile`: shell startup configuration.
 - `.inputrc`: Readline settings (identical to the existing root `.inputrc`).
-- `.config/jj/config.toml`: user identity, editor and operation metadata.
+- `.config/jj/config.toml`: user name, editor and operation metadata; email omitted.
 - `.config/fish/conf.d/atuin.env.fish`: existing Fish startup snippet.
 - `cmux-preferences.json`: selected cmux 0.62.2 appearance and behavior
   preferences, exported from `com.cmuxterm.app`. No session or browser state.
@@ -20,7 +20,8 @@ Supply its value through a private environment. Credentials, shell history,
 SSH material, generated completions, installed tools and per-repository JJ state
 are not included.
 
-Exported settings match the source files except for that secret omission.
+Exported settings match the source files except for the omitted token and
+personal email. Configure your own JJ email locally after restoring the snapshot.
 
 Live files in `$HOME` were not changed. Existing live aliases can therefore still
 refer to `main`; use explicit JJ commands to work with this repository's `prod`.
