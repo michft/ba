@@ -11,9 +11,15 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("ba_setup", ROOT / "setup.py")
 setup = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(setup)
+TEST_EMAIL = "@".join(("setup-test", "example.invalid"))
 
 
 class SetupTests(unittest.TestCase):
+    def setUp(self):
+        prompt = patch("builtins.input", return_value=TEST_EMAIL)
+        self.email_prompt = prompt.start()
+        self.addCleanup(prompt.stop)
+
     def test_preview_backup_repeat_and_local_overrides(self):
         with tempfile.TemporaryDirectory(prefix="ba test ") as directory:
             home = Path(directory)
@@ -26,6 +32,7 @@ class SetupTests(unittest.TestCase):
             jj.parent.mkdir()
             jj.write_text('[user]\nname = "Another User"\n')
             self.assertEqual(setup.main(["--home", directory]), 0)
+            self.email_prompt.assert_not_called()
             self.assertEqual(startup.read_text(), "# user startup\n")
             self.assertFalse((home / ".local").exists())
             self.assertEqual(setup.main(["--home", directory, "--apply"]), 0)
@@ -34,10 +41,58 @@ class SetupTests(unittest.TestCase):
             self.assertEqual((backups[0] / ".zshrc").read_text(), "# user startup\n")
             self.assertEqual(local.read_text(), "alias mine='true'\n")
             self.assertIn("Another User", jj.read_text())
+            self.assertEqual(setup.configured_email(jj), TEST_EMAIL)
+            self.assertEqual((backups[0] / ".config/jj/config.toml").read_text(), '[user]\nname = "Another User"\n')
             self.assertEqual(setup.file_plan(home), {})
             self.assertEqual(setup.main(["--home", directory, "--apply"]), 0)
             self.assertEqual(len(list(backups[0].parent.iterdir())), 1)
+            self.email_prompt.assert_called_once()
             subprocess.run(["zsh", "-n", str(startup)], check=True)
+
+    def test_existing_email_preserved_without_prompt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            config = home / ".config/jj/config.toml"
+            config.parent.mkdir(parents=True)
+            original = f'# Keep this comment\nuser = {{ name = "Local User", email = "{TEST_EMAIL}" }}\n'
+            config.write_text(original)
+            setup.main(["--home", directory, "--apply"])
+            self.email_prompt.assert_not_called()
+            self.assertEqual(config.read_text(), original)
+
+    def test_blank_email_retries_and_preserves_other_toml(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            config = home / ".config/jj/config.toml"
+            config.parent.mkdir(parents=True)
+            original = '# Keep this comment\nuser = { name = "Local User", email = "" }\n[ui]\neditor = "nano"\n'
+            config.write_text(original)
+            self.email_prompt.side_effect = ["", "invalid", "has space@domain", TEST_EMAIL]
+            setup.main(["--home", directory, "--apply"])
+            self.assertEqual(self.email_prompt.call_count, 4)
+            self.assertEqual(setup.configured_email(config), TEST_EMAIL)
+            self.assertIn("# Keep this comment", config.read_text())
+            self.assertIn('name = "Local User"', config.read_text())
+            self.assertIn('editor = "nano"', config.read_text())
+
+    def test_cancelled_email_prompt_writes_nothing(self):
+        for error in [EOFError, KeyboardInterrupt]:
+            with self.subTest(error=error), tempfile.TemporaryDirectory() as directory:
+                home = Path(directory)
+                self.email_prompt.side_effect = error
+                with self.assertRaisesRegex(ValueError, "JJ email required"):
+                    setup.main(["--home", directory, "--apply"])
+                self.assertEqual(list(home.iterdir()), [])
+
+    def test_new_config_email_stays_in_target_home(self):
+        with tempfile.TemporaryDirectory() as directory:
+            home = Path(directory)
+            snapshot = (ROOT / "macos/home/.config/jj/config.toml").read_bytes()
+            setup.main(["--home", directory, "--apply"])
+            config = home / ".config/jj/config.toml"
+            self.assertEqual(setup.configured_email(config), TEST_EMAIL)
+            self.assertEqual(config.stat().st_mode & 0o777, 0o600)
+            self.assertEqual((ROOT / "macos/home/.config/jj/config.toml").read_bytes(), snapshot)
 
     def test_symlink_replaced_without_touching_original(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -84,8 +139,11 @@ class SetupTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory).resolve()
             calls = []
+            real_run = subprocess.run
 
             def run(command, **kwargs):
+                if command[0] == "jj":
+                    return real_run(command, **kwargs)
                 calls.append(command)
                 if command[0].endswith("pgrep"):
                     return subprocess.CompletedProcess(command, 1)

@@ -21,7 +21,9 @@ SSH material, generated completions, installed tools and per-repository JJ state
 are not included.
 
 Exported settings match the source files except for the omitted token and
-personal email. Configure your own JJ email locally after restoring the snapshot.
+personal email. `setup.py --apply` prompts for a missing JJ email and saves it
+only in your local configuration. If restoring the snapshot manually, set your
+own email locally as well.
 
 Live files in `$HOME` were not changed. Existing live aliases can therefore still
 refer to `main`; use explicit JJ commands to work with this repository's `prod`.

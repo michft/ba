@@ -6,7 +6,7 @@ preferences across Macs. The original Linux setup remains in `install.sh` and
 
 ## Preview and install
 
-Requires Zsh and Python 3.10 or newer. Install the CLI applications you use
+Requires Zsh, JJ, and Python 3.10 or newer. Install the CLI applications you use
 separately; this installer does not download packages or create macOS accounts.
 
 Keep the checkout in a permanent location, such as `~/src/ba`, because startup
@@ -31,10 +31,18 @@ replaced files. To undo, restore the backed-up originals and remove only files
 listed as newly created in that manifest. Do not put backups in this repository:
 original startup files may contain private credentials.
 
-Reapplying leaves identical files, existing local overrides and existing JJ user
-identity untouched. New JJ configurations contain editor settings only; set your
-own identity with `jj config set --user user.name ...` and
-`jj config set --user user.email ...`.
+During `--apply`, setup prompts for your JJ commit email if it is missing or blank
+in `~/.config/jj/config.toml`. Blank or malformed input retries; cancelling or
+reaching end of input stops before configuration files are written. Preview
+reports the missing email without prompting. Apply must be interactive when an
+email is needed.
+
+The email is saved only in your local JJ config, with any existing config backed
+up first. It is never added to this repository. Existing email, user name, other
+JJ settings and local overrides stay unchanged. Reapplying does not prompt once
+email is configured. Set your name separately with
+`jj config set --user user.name ...` if needed. Setup uses JJ's native TOML editor
+to preserve existing settings and comments.
 
 `--home /path/to/existing/home` supports isolated setup previews/tests. Apply as
 the intended user, without `sudo`. Automated installation targets standard home

@@ -45,6 +45,45 @@ def file_plan(home: Path) -> dict[Path, bytes]:
     }
 
 
+def configured_email(path: Path) -> str:
+    if not path.is_file():
+        return ""
+    result = subprocess.run(
+        ["jj", "--ignore-working-copy", "config", "list", "--user",
+         "--include-overridden", "user.email", "--template", "value.as_string()"],
+        env=dict(os.environ, JJ_CONFIG=str(path)), cwd=path.parent,
+        check=True, capture_output=True, text=True,
+    )
+    return result.stdout.strip()
+
+
+def prompt_email_config(content: bytes) -> bytes:
+    while True:
+        try:
+            email = input("JJ commit email: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            raise ValueError("JJ email required; rerun --apply interactively. No configuration written.") from None
+        local, separator, domain = email.partition("@")
+        if local and separator and domain and "@" not in domain and not any(
+            char.isspace() or ord(char) < 32 or ord(char) == 127 for char in email
+        ):
+            break
+        print("Enter an email with a local part and domain, without spaces.")
+    # Let JJ edit TOML, preserving other settings and comments. Stage it first so
+    # the normal backup and atomic file replacement also cover the email change.
+    with tempfile.TemporaryDirectory(prefix="ba-jj-config-") as directory:
+        staged = Path(directory) / "config.toml"
+        staged.write_bytes(content)
+        staged.chmod(0o600)
+        subprocess.run(
+            ["jj", "--ignore-working-copy", "config", "set", "--file", str(staged),
+             "user.email", json.dumps(email, ensure_ascii=False)],
+            env=dict(os.environ, JJ_CONFIG=str(staged)), cwd=directory,
+            check=True, capture_output=True, text=True,
+        )
+        return staged.read_bytes()
+
+
 def cmux_write_args(key: str, value: object) -> list[str]:
     if type(value) is bool:
         flag, text = "-bool", "true" if value else "false"
@@ -90,6 +129,10 @@ def main(argv: list[str] | None = None) -> int:
             if os.environ.get(name) and Path(os.environ[name]).expanduser().resolve() != expected:
                 parser.error(f"custom {name} is not supported by this installer; see SETUP.md")
     plan = file_plan(home)
+    email_path = home / ".config/jj/config.toml"
+    needs_email = not configured_email(email_path)
+    if needs_email and email_path not in plan:
+        plan[email_path] = email_path.read_bytes()
     # Validate every destination before writing any files.
     for path in plan:
         if path.is_dir() and not path.is_symlink():
@@ -116,9 +159,13 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{action}: {path}")
     if cmux_commands:
         print(f"Apply {len(cmux_commands)} selected cmux preferences; preserve other keys.")
+    if needs_email:
+        print("JJ email missing; apply will prompt before writing configuration.")
     if not args.apply:
         print("Preview only. Run again with --apply to write this plan.")
         return 0
+    if needs_email:
+        plan[email_path] = prompt_email_config(plan[email_path])
     if not plan and not cmux_commands:
         print("Already up to date.")
         return 0
