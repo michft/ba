@@ -1,6 +1,7 @@
 # Mac shell customisation
 
-Exported from this Mac on 2026-09-15. Paths under `home/` map directly to
+Exported from this Mac on 2026-09-15. For portable installation, use
+[SETUP.md](../SETUP.md). Paths under `home/` map directly to
 the same paths under `$HOME`. This is a configuration snapshot, not a full
 machine backup. The existing Linux files and `install.sh` remain separate.
 
@@ -11,7 +12,7 @@ machine backup. The existing Linux files and `install.sh` remain separate.
 - `.inputrc`: Readline settings (identical to the existing root `.inputrc`).
 - `.config/jj/config.toml`: user identity, editor and operation metadata.
 - `.config/fish/conf.d/atuin.env.fish`: existing Fish startup snippet.
-- `../cmux-preferences.json`: selected cmux 0.62.2 appearance and behavior
+- `cmux-preferences.json`: selected cmux 0.62.2 appearance and behavior
   preferences, exported from `com.cmuxterm.app`. No session or browser state.
 
 The `HF_TOKEN` assignment was replaced by a comment before creating the commit.
@@ -61,13 +62,17 @@ jj diff --from github-start --to mac-customisation
 jj status
 ```
 
-When ready to publish, push only the intended bookmark, then set GitHub's default
-branch. These commands are instructions only; export preparation does not run them:
+When ready to publish, first fetch current remote refs and check the candidate
+against `prod@origin`. Push only the intended bookmark. These commands are
+instructions only; export preparation does not run them:
 
 ```sh
-jj git push --remote origin --bookmark prod --allow-new
-gh repo edit michft/ba --default-branch prod
+jj git fetch --remote origin
+jj log -r 'prod | prod@origin'
+jj git push --remote origin --bookmark prod
 ```
 
-GitHub remains on its existing `main` default until that publishing step. The
-original `main` bookmark remains available as the upstream starting point.
+The owner changed GitHub's default to `prod` during preparation. The refreshed
+`prod@origin` points to the original `0fffe67a` starting commit. `github-start`
+preserves that initial upstream point. Fetch again before publishing if the
+remote has changed since this preparation.
