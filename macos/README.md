@@ -44,8 +44,10 @@ The repository is colocated: both `.git` and `.jj` are in `/Users/mt/src/ba`.
 - `github-start`: unchanged GitHub starting commit `0fffe67a`.
 - `mac-snapshot`: export commit directly on top of that starting commit.
 - `mac-customisation`: portable setup commit on top of the snapshot.
-- `prod`: merge candidate joining `github-start` and `mac-customisation`.
-- The working copy is an empty change on top of `prod`.
+- `zsh-cmux-setup`: feature branch containing the snapshot, portable setup and
+  this workflow documentation. Publish it for a pull request into `prod`.
+- `prod`: matches the last fetched `prod@origin`; it is not the feature branch.
+- The working copy is an empty change on top of `zsh-cmux-setup`.
 
 Repository-local JJ configuration sets `trunk()` to `prod`. JJ configuration is
 not tracked by Git. To reproduce that local setting in another clone:
@@ -58,19 +60,20 @@ Review before publishing:
 
 ```sh
 jj log -r 'ancestors(@, 6)'
-jj diff --from github-start --to mac-customisation
+jj diff --from prod@origin --to zsh-cmux-setup
 jj status
 ```
 
-When ready to publish, first fetch current remote refs and check the candidate
-against `prod@origin`. Push only the intended bookmark. These commands are
-instructions only; export preparation does not run them:
+Publish the feature bookmark and open a pull request targeting `prod`:
 
 ```sh
 jj git fetch --remote origin
-jj log -r 'prod | prod@origin'
-jj git push --remote origin --bookmark prod
+jj git push --remote origin --bookmark zsh-cmux-setup
+gh pr create --repo michft/ba --base prod --head zsh-cmux-setup
 ```
+
+Merge the pull request after review. Do not advance or push local `prod` to
+publish feature work. After merging, fetch and move local `prod` to `prod@origin`.
 
 The owner changed GitHub's default to `prod` during preparation. The refreshed
 `prod@origin` points to the original `0fffe67a` starting commit. `github-start`

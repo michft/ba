@@ -132,8 +132,17 @@ jj new prod@origin
 python3 setup.py
 ```
 
-Keep shared changes in this repository, commit them with JJ, then publish the
-specific reviewed bookmark. Keep private or machine-only changes in the local
+Keep shared changes in this repository, commit them with JJ on a feature
+bookmark, then push that bookmark and open a pull request targeting `prod`.
+For this setup, the feature bookmark is `zsh-cmux-setup`:
+
+```sh
+jj git push --remote origin --bookmark zsh-cmux-setup
+gh pr create --repo michft/ba --base prod --head zsh-cmux-setup
+```
+
+Merge into `prod` after review. Local `prod` stays at `prod@origin` while feature
+work is in progress. Keep private or machine-only changes in the local
 override files. Because startup sources the checkout, **the checked-out revision
 determines what new shells load**; review incoming shell code before opening a
 new shell. Rerun `setup.py --apply` only when generated startup files change or
