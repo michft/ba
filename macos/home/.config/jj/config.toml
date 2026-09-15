@@ -1,0 +1,12 @@
+#:schema https://docs.jj-vcs.dev/latest/config-schema.json
+
+[user]
+name = "Michael Tomkins"
+
+[ui]
+editor = "vim"
+merge-editor = ":builtin"
+
+[operation]
+hostname = "Ms-Mac-mini.local"
+username = "mt"
