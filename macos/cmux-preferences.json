@@ -1,0 +1,20 @@
+{
+  "appearanceMode": "dark",
+  "appIconMode": "dark",
+  "browserSearchEngine": "google",
+  "browserThemeMode": "system",
+  "newWorkspacePlacement": "afterCurrent",
+  "sidebarActiveTabIndicatorStyle": "leftRail",
+  "sidebarBlendMode": "withinWindow",
+  "sidebarBlurOpacity": 1.0,
+  "sidebarCornerRadius": 0.0,
+  "sidebarMaterial": "sidebar",
+  "sidebarPreset": "nativeSidebar",
+  "sidebarTintHex": "#000000",
+  "sidebarTintOpacity": 0.18,
+  "sendAnonymousTelemetry": false,
+  "warnBeforeQuitShortcut": false,
+  "SUAutomaticallyUpdate": false,
+  "SUEnableAutomaticChecks": false,
+  "SUSendProfileInfo": false
+}
